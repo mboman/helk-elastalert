@@ -1,2 +1,66 @@
 ---
-# tasks file for helk-elastalert
+- name: Add Elastic APT Key
+  apt_key:
+    url: https://artifacts.elastic.co/GPG-KEY-elasticsearch
+    state: present
+  when: ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu'
+
+- name: Add Elastic APT repository
+  apt_repository:
+    repo: deb https://artifacts.elastic.co/packages/7.x/apt stable main
+    state: present
+  when: ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu'
+
+- name: Install dependencies
+  apt:
+    name: default-jre
+    state: present
+  when: ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu'
+
+- name: Installing HELK Elastalert dependencies
+  apt:
+    name: "{{ item }}"
+    state: present
+  loop:
+    - libmagic-dev
+    - build-essential
+    - python3-setuptools
+    - git
+    - python3-pip
+    - python3-dev
+    - python3-setuptools
+    - python3-virtualenv
+    - tzdata
+  when: ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu'
+
+- name: Creating directories
+  file:
+    path: /etc/elastalert/rules
+    state: directory
+
+- name: Downloading elastalert
+  git:
+    repo: https://github.com/Yelp/elastalert.git
+    dest: "{{ ESALERT_HOME }}"
+
+- name: Installing Elastalert python dependendencies
+  pip:
+    name:
+      - pip
+      - setuptools
+      - urllib3
+      - enum34
+      - sigmatools
+    virtualenv: "{{ ESALERT_HOME }}/venv"
+    virtualenv_python: python3
+
+- name: Installing Elastalert python dependendencies
+  pip:
+    requirements: "{{ ESALERT_HOME }}/requirements.txt"
+    virtualenv: "{{ ESALERT_HOME }}/venv"
+    virtualenv_python: python3
+
+- name: Install HELK SIGMA
+  git:
+    repo: https://github.com/Cyb3rWard0g/sigma.git
+    dest: "{{ ESALERT_SIGMA_HOME }}"

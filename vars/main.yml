@@ -1,2 +1,9 @@
 ---
-# vars file for helk-elastalert
+
+ESALERT_GID: 910
+ESALERT_HOME: /etc/elastalert
+ESALERT_SIGMA_HOME: /opt/sigma
+ESALERT_UID: 910
+ESALERT_USER: elastalertuser
+ES_HOST: helk-elasticsearch
+ES_PORT: 9200
